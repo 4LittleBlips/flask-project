@@ -1,0 +1,91 @@
+
+<div class='comment' id="comment{{comment.id}}">
+	<h4>	
+		{{ comment.commenter.username }}  ( on {{ moment(comment.timestamp).format('LLL') }} ): </h4> 
+	<p> {{ comment.body }} </p>
+	
+	{% if current_user.username == comment.commenter.username %}
+	
+	<button type='button' id='delete{{comment.id}}' style='float: right;'>Delete Comment</button>
+	<button type='button' id="edit{{comment.id}}" style="float: right;">Edit Comment</button>
+	<script>
+	$("#edit{{comment.id}}").click(function() {
+		var form = $("<form>" +
+			"<p> {{ editForm.text.label }} <br />" + 
+			"{{ editForm.text(cols=40, rows=5) }} <br />" +
+			"{% for e in editForm.text.errors %}"+
+			"<span style='color: red;'>{{ e }}</span>" +
+			"{% endfor %}" +
+			"</p>"+ 
+			"</form>")
+		$("#comment{{comment.id}} p").replaceWith(form)
+	});
+
+	$("#submitEdit{{comment.id}}").click(function() {
+		$.ajax({
+			type: 'POST',
+			url: "{{ url_for('editComment', comment_id=comment.id) }}",
+			data: JSON.stringify({
+				'comment_id': {{ comment.id }}
+			}),
+			contentType: 'application/json;charset=UTF-8',
+			dataType: 'json',
+			success: function(data){
+				$("#comment{{comment.id}} p").text(data.edited_text)
+				console.log(data);
+			},
+			error: function(error){
+				console.log(error);
+			}
+		});
+	});
+
+	$("#delete{{comment.id}}").click(function() {
+		$.ajax({
+			type: 'DELETE',
+			url: "{{ url_for('deleteComment', comment_id=comment.id) }}",
+			data: JSON.stringify({
+				'comment_id': {{ comment.id }}
+			}),
+			contentType: 'application/json',
+			dataType: 'json',
+			beforeSend: function() {
+				return confirm('Are you sure you would like to delete this comment?');
+			},
+			success: function(data){
+				$("#comment{{comment.id}}").hide()
+				console.log(data);
+			},
+			error: function(error){
+				console.log(error);
+			}
+		});
+	});
+
+	</script>
+	{% endif %}
+
+	{% if current_user.is_authenticated %}
+	
+	<button type='button' onclick="hideFunc({{ comment.id }})">Reply</button>
+	<form action="{{ url_for('addReply', post_id=comment.post.id, comment_id=comment.id) }}" method='post' id="{{ comment.id }}" style="display: none;">
+		{{ replyForm.csrf_token() }}
+		<p> {{ replyForm.text.label }}<br />
+		    {{ replyForm.text(cols=40, rows=5) }}<br />
+		    {% for e in replyForm.text.errors %}
+		    <span style="color: red;">{{ e }}</span>
+		    {% endfor %}
+		</p>
+		
+		<p> {{ replyForm.submit() }}</p>
+	</form>
+	{% endif %}
+	<div class='replies'>
+	{% if comment.replies %}
+		{% for reply in comment.replies %}
+			{% include '_reply.html' %}
+		
+		{% endfor %}
+	{% endif %}
+	</div>
+</div>

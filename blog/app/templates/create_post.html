@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3> Create Your Post </h3>
+
+<form action='' method='post'>
+	{{ form.hidden_tag() }}
+	<p>
+		{{ form.text.label }}<br />
+		{{ form.text(cols=100, rows=5) }}<br />
+		{% for e in form.text.errors %}
+			<span style="color: red;">{{ e }}</span>
+		{% endfor %}
+	</p>
+
+	<p> {{ form.submit() }} </p>
+</form>
+		
+
+
+
+{% endblock %}

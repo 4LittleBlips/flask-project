@@ -1,0 +1,13 @@
+{% extends 'base.html' %}	{# inherits content block from base.html #}
+{% block content %}
+
+{% if current_user.is_anonymous %}
+	<h1> Hello, World! </h1>
+{% else %}
+	<h1> Hello, {{ current_user.username }} </h1>
+{% endif %}
+		{% for post in posts %}
+		<div><p> {% include '_post.html' %}</p> </div>
+		{% endfor %}
+
+{% endblock %}

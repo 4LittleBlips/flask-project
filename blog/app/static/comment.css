@@ -1,0 +1,26 @@
+.comment {
+	border: 1px solid black;
+	padding: 20px;
+	margin: 20px;
+}
+
+.replies {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.white {
+	flex: 1 0 15%;
+}
+
+.reply {
+	flex: 1 0 85%;
+}
+
+.reply:nth-child(4n) {
+	background-color: #A9A9A9;
+}
+
+.white:nth-child(4n+3) {
+	background-color: #A9A9A9;
+}

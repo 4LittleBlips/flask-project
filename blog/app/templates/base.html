@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+	{% if title %}
+		<title> {{ title }} - Blog </title>
+	{% else %}
+		<title> My Blog </title>
+	{% endif %}
+	
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+	{% block style %}{% endblock %}
+
+	<script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"></script>
+
+
+</head>
+
+<body>
+	
+
+
+	
+	<div id='header'>
+		<h1>Blog</h1>
+	<nav>
+		<ul>
+			<li><a href="/index" {% if request.path == '/' or request.path == url_for('index') %} class="active" {% endif %}>Home</a></li>
+			{% if current_user.is_anonymous %}
+			<li><a href="/login" {% if request.path == url_for('login') %} class='active' {% endif %}>Login</a></li>
+			{% else %}
+			<li><a href=" {{ url_for('profile', username=current_user.username) }} " {% if request.path ==  url_for('profile', username=current_user.username)  %} class='active' {% endif %}>My Profile</a></li>
+			<li><a href="/logout" {% if request.path == url_for('logout') %} class='active' {% endif %}>Logout</a></li>
+			{% endif %}
+		</ul>
+	</nav>
+	</div>
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+	<div id='messages'>
+	{% for m in messages %}
+	<p>{{ m }}</p>
+	{% endfor %}
+	</div>
+	{% endif %}
+	{% endwith %}
+	<div id='main'>	
+		<div id='users'>
+			<h2>All Users</h2>
+			{% for user in users %}
+			{% include '_user.html' %}
+			{% endfor %}
+		</div>
+
+		<div id='blog'>
+
+
+		{% block content %}{% endblock %}	{# templates extended from this need to be inserted inside block content #}
+		
+		</div>
+
+		<div id='blank'>
+		</div>
+	</div>
+	{{ moment.include_moment() }} 		{# generates script tag and adds moment.js library #}
+	{% block script %}{% endblock %}
+
+</body>
+</html>
